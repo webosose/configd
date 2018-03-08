@@ -1,0 +1,182 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "layers schema for validating layers.json",
+    "type": "object",
+    "definitions": {
+        "type_command": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                }
+            }
+        },
+        "type_file": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "string"
+                },
+                "alternative": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/type_file"
+                        },
+                        {
+                            "$ref": "#/definitions/type_command"
+                        },
+                        {
+                            "$ref": "#/definitions/type_json"
+                        },
+                        {
+                            "$ref": "#/definitions/type_string"
+                        }
+                    ]
+                }
+            }
+        },
+        "type_json": {
+            "type": "object",
+            "properties": {
+                "json": {
+                    "type": "string"
+                }
+            }
+        },
+        "type_luna_cmd": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "luna_cmd": {
+                    "type": "object",
+                    "properties": {
+                        "method": {
+                            "type": "string"
+                        },
+                        "params": {
+                            "type": "object",
+                            "properties": {
+                                "subscribe": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                },
+                "alternative": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/type_file"
+                        },
+                        {
+                            "$ref": "#/definitions/type_command"
+                        },
+                        {
+                            "$ref": "#/definitions/type_json"
+                        },
+                        {
+                            "$ref": "#/definitions/type_string"
+                        }
+                    ]
+                }
+            }
+        },
+        "type_string": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                }
+            }
+        },
+        "type_all": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/type_file"
+                },
+                {
+                    "$ref": "#/definitions/type_command"
+                },
+                {
+                    "$ref": "#/definitions/type_json"
+                },
+                {
+                    "$ref": "#/definitions/type_luna_cmd"
+                },
+                {
+                    "$ref": "#/definitions/type_string"
+                }
+            ]
+        }
+    },
+    "properties": {
+        "version" : {
+            "type": "string"
+        },
+        "layers": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "note": {
+                            "type": "string"
+                        },
+                        "base_dir": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "priority": {
+                            "type": "number"
+                        },
+                        "selector": {
+                            "$ref": "#/definitions/type_all"
+                        }
+                    }
+                }
+            ]
+        },
+        "pre_process": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "note": {
+                            "type": "string"
+                        },
+                        "process": {
+                            "$ref": "#/definitions/type_all"
+                        }
+                    }
+                }
+            ]
+        },
+        "post_process": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "note": {
+                            "type": "string"
+                        },
+                        "process": {
+                            "$ref": "#/definitions/type_all"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "required": [
+        "layers"
+    ]
+}

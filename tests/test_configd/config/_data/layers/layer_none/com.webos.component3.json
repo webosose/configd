@@ -1,0 +1,13 @@
+{
+    "configs" : [{
+        "data" :
+        {
+            "key1": true,
+            "key2": "equal"
+        },
+        "permissions" :
+        {
+            "read": ["app1", "app2"]
+        }
+    }]
+}

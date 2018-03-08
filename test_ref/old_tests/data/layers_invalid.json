@@ -1,0 +1,8 @@
+{
+    "layers": [
+    ],
+    "post_process": {
+        "note" : "triggered on save",
+        "command": "/usr/bin/node /etc/configd/scripts/post_reconfigure.js"
+    }
+}

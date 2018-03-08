@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "featureList schema for validating featurelist file",
+    "id": "ConfigdService.featureList",
+    "properties": {
+        "": {
+            "type": "object"
+        }
+    },
+    "type": "object"
+}

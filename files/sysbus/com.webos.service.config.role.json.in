@@ -1,0 +1,11 @@
+{
+    "exeName":"@WEBOS_INSTALL_SBINDIR@/configd",
+    "type": "regular",
+    "allowedNames": ["com.webos.service.config"],
+    "permissions": [
+        {
+            "service":"com.webos.service.config",
+            "outbound": ["*"]
+        }
+    ]
+}

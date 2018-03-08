@@ -1,0 +1,86 @@
+{
+	"com.webos.app.inputcommon": {
+		"enableClearVoice": true,
+		"enableSmartSoundMode": false
+	},
+	"randomNumberTest": {
+		"randomNumber": 1
+	},
+	"com.webos.media": {
+		"streamingAccelerationProperties": {
+			"SS": false,
+			"Progressive": false,
+			"HLS": false,
+			"DASH": false
+		}
+	},
+	"com.webos.app.tips": {
+		"enableMagicTips": true
+	},
+	"com.webos.service.time": {
+		"boottimeAdjustment": true
+	},
+	"commercial.video": {
+		"tileColMax": 15,
+		"supportMultiStreamTransport": false,
+		"defaultNaturalSize": {
+			"size": 20
+		},
+		"innerPatternColor": {
+			"support": false,
+			"color": []
+		},
+		"tileRowMax": 15
+	},
+	"com.webos.service.commercialinputdevice": {
+		"enableMouseVisibleOnPortrait": false,
+		"inputPointerScale": {
+			"scaleX": 1,
+			"scaleY": 1
+		}
+	},
+	"commercial.com.lge.settingsservice": {
+		"invisibleValue": [],
+		"invisibleKey": []
+	},
+	"com.webos.app.installation": {
+		"disableWakeUpFrame": false
+	},
+	"commercial.sensor": {
+		"list": []
+	},
+	"tv.config": {
+		"supportPreloadAPI": true,
+		"useLibMotionEngine": true,
+		"enableAtsc3NABS": false,
+		"supportDolbyTVATMOS": false,
+		"useCaptureGfxScaler": false,
+		"defaultSoundOut": ["SCENARIO_TV_SPEAKER", "SCENARIO_EXT_SPEAKER_OPTICAL"],
+		"defaultSoundEngineMode": "Standard",
+		"supportDolbyHDRContents": false,
+		"caseUnsupportMotionRemoconFeature": {
+			"useLibMotionEngine": false
+		}
+	},
+	"com.webos.applicationManager": {
+		"applications_smartservice": [],
+		"applications_broadcast": ["com.lge.app.testsuite.npapi", "com.webos.app.information", "com.webos.app.photovideo", "com.webos.app.music", "com.webos.app.signagescheduler", "com.webos.app.externalinput.rgb", "com.webos.app.hdmi1", "com.webos.app.hdmi2", "com.webos.app.hdmi3", "com.webos.app.hdmi4", "com.webos.app.browser", "com.webos.app.installation", "com.webos.app.siappsetting", "com.webos.app.dsmp", "com.webos.app.supersigncontents", "com.webos.app.miracast", "com.webos.app.signageeditor", "com.webos.app.multiscreen", "com.webos.app.controlmanager", "com.webos.app.levelertool", "com.webos.app.controlmanager", "com.webos.app.hcap-ref", "com.webos.app.levelertool", "com.webos.app.multiscreen", "com.webos.app.qml-rotation", "com.webos.app.signageeditor", "com.webos.app.mediaevents-test", "com.webos.app.dualvideo", "com.webos.app.test.qml.video", "com.webos.app.test.qml.dual-video", "com.webos.app.videotexture", "com.webos.app.dual-videotexture", "com.webos.app.gapless", "com.webos.app.gaplessplayer", "com.webos.app.dualvideogapless", "com.webos.app.test.preload", "com.webos.app.test.dash", "com.webos.app.test.hls", "com.webos.app.test.ipstreaming"],
+		"applications": ["com.lge.app.testsuite.npapi", "com.webos.app.information", "com.webos.app.photovideo", "com.webos.app.music", "com.webos.app.signagescheduler", "com.webos.app.externalinput.rgb", "com.webos.app.hdmi1", "com.webos.app.hdmi2", "com.webos.app.hdmi3", "com.webos.app.hdmi4", "com.webos.app.browser", "com.webos.app.installation", "com.webos.app.siappsetting", "com.webos.app.dsmp", "com.webos.app.supersigncontents", "com.webos.app.miracast", "com.webos.app.signageeditor", "com.webos.app.multiscreen", "com.webos.app.controlmanager", "com.webos.app.levelertool", "com.webos.app.controlmanager", "com.webos.app.hcap-ref", "com.webos.app.levelertool", "com.webos.app.multiscreen", "com.webos.app.qml-rotation", "com.webos.app.signageeditor", "com.webos.app.mediaevents-test", "com.webos.app.dualvideo", "com.webos.app.test.qml.video", "com.webos.app.test.qml.dual-video", "com.webos.app.videotexture", "com.webos.app.dual-videotexture", "com.webos.app.gapless", "com.webos.app.gaplessplayer", "com.webos.app.dualvideogapless", "com.webos.app.test.preload", "com.webos.app.test.dash", "com.webos.app.test.hls", "com.webos.app.test.ipstreaming"],
+		"keepAliveApps": ["commercial.signage.signageapplauncher", "commercial.signage.signageapplauncher.debug"],
+		"applications_append": [],
+		"applications_exclude": ["com.webos.app.egallery"]
+	},
+	"com.webos.app.tvhotkey": {
+		"disableTile": false,
+		"disableWhiteBalance": false
+	},
+	"com.webos.authenticationMethods": {
+		"pincode": ["keyboardMode", "secureMode"]
+	},
+	"com.webos.service.cbox": {
+		"thumbnailBackgroundExtraction": {
+			"video": true,
+			"recording": true
+		}
+	}
+}

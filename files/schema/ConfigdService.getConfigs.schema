@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "getConfigs schema for validating getConfigs input",
+    "id": "ConfigdService.getConfigs",
+    "type": "object",
+    "properties": {
+        "configNames": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "subscribe": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "configNames"
+    ]
+}

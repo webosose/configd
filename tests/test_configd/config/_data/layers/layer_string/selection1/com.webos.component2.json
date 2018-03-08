@@ -1,0 +1,6 @@
+{
+    "configs" : [{
+        "data": {
+            "stringKey1": "stringKey2"
+        }]
+}

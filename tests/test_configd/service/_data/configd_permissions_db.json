@@ -1,0 +1,21 @@
+{
+    "com.webos.category1": {
+        "key1": {
+            "read" : ["com.webos.service.config", "app1-*"]
+        },
+        "key2": {
+            "read" : ["*"]
+        }
+    },
+    "com.webos.category2": {
+        "key1": {
+            "read" : ["app2"]
+        },
+        "key2": {
+            "read" : ["*"]
+        }
+    },
+    "subscription": {
+        "permission" : ["app1"]
+    }
+}

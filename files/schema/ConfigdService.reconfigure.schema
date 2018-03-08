@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "reconfigure schema for validating reConfigs inputs",
+    "id": "Configd.reconfigure",
+    "optional": [
+        "timeout"
+    ],
+    "properties": {
+        "timeout": {
+            "type": "integer"
+        }
+    },
+    "type": "object"
+}

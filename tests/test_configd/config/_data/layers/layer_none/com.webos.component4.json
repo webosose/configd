@@ -1,0 +1,35 @@
+{
+    "configs" : [
+    {
+        "data" :
+        {
+            "key1": true,
+            "key2": false
+        }
+    },
+    {
+        "data" :
+        {
+            "key3": "value3",
+            "key4": "value4"
+        },
+        "permissions" :
+        {
+            "read" : [
+                "app1"
+            ]
+        }
+    },
+    {
+        "data" :
+        {
+            "key5": "value5"
+        },
+        "permissions" :
+        {
+            "read" : [
+                "app1"
+            ]
+        }
+    }]
+}

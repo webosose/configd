@@ -1,0 +1,26 @@
+{
+    "id1": {
+        "key1": 1,
+        "key2": "value1"
+    },
+    "id2": {
+        "key1": 2,
+        "key2": "value2"
+    },
+    "id3": {
+        "key1": 3,
+        "key2": "value3"
+    },
+    "id4": {
+        "key1": 4,
+        "key2": "value4"
+    },
+    "id5": {
+        "key1": 5,
+        "key2": "value5"
+    },
+    "logger": {
+        "level": 1,
+        "type": 3
+    }
+}

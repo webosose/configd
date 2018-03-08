@@ -1,0 +1,8 @@
+{
+    "logger": {
+        "debug": true,
+        "level": 3,
+        "path": "tests/output/log",
+        "type": 2
+    }
+}

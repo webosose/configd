@@ -1,0 +1,14 @@
+{
+    "configs": [{
+        "data": {
+            "enableMagicTips": true
+        },
+        "permissions": {
+            "read": [
+                "app1",
+                "app2"
+            ],
+            "write": []
+        }
+    }]
+}

@@ -1,0 +1,34 @@
+{
+    "configs": [
+    {
+        "data": {
+            "priorityKey1": "stringValue",
+            "stringKey1": "stringValue1"
+        }
+    },
+    {
+        "data" : {
+            "conditionalKey": "whereMatched2"
+        },
+         "where": {
+            "op": "=", "prop": "com.webos.component1.conditionalValue", "val": "val2"
+        }
+    },
+    {
+        "data" : {
+            "conditionalKey": "whereMatched"
+        },
+         "where": {
+            "op": "=", "prop": "com.webos.component1.conditionalValue", "val": true
+        }
+    },
+    {
+        "data" : {
+            "conditionalKey": "whereMatched3"
+        },
+         "where": {
+            "op": "=", "prop": "com.webos.component1.conditionalValue", "val": "val3"
+        }
+    }
+    ]
+}

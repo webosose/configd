@@ -1,0 +1,6 @@
+*.c filter=astyle
+*.c.in filter=astyle
+*.cpp filter=astyle
+*.cpp.in filter=astyle
+*.h filter=astyle
+*.h.in filter=astyle

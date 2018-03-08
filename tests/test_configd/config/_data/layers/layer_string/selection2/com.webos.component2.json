@@ -1,0 +1,7 @@
+{
+    "configs" : [{
+        "data" : {
+            "stringKey1": "stringValue2"
+        }
+    }]
+}

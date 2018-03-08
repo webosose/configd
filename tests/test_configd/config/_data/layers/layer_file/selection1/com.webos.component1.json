@@ -1,0 +1,16 @@
+{
+    "configs": [{
+        "data": {
+            "fileKey1": true,
+            "multiLayerKey": true,
+            "priorityKey1": "fileValue",
+            "permissionKey": "permission"
+        },
+        "permissions": {
+            "read": [
+                "app3",
+                "app4"
+            ]
+        }
+    }]
+}

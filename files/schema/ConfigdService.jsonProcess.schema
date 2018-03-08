@@ -1,0 +1,14 @@
+[
+    {
+        "config" : {
+            "tv.config" : {
+                "supportDolbyHDRContents" : true
+            }
+        },
+        "conditions" : {
+            "prop" : "tv.model.supportDolbyVisionHDR",
+            "op" : "=",
+            "val" : true
+        }
+    }
+]

@@ -1,0 +1,7 @@
+{
+    "com.webos.service.config": [
+        "settings",
+        "system",
+        "tv.settings"
+    ]
+}

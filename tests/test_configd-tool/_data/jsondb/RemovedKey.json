@@ -1,0 +1,15 @@
+{
+    "tv.rmm": {
+        "ttxMode": false
+    },
+    "com.webos.service.config": {
+        "usrDefined": [
+            "tv.rmm.ttxMode",
+            "com.webos.service.config.testArray",
+            "com.webos.service.config.testObject",
+            "com.webos.service.config.testBoolean"
+        ],
+        "testObject": null,
+        "testArray": null
+    }
+}

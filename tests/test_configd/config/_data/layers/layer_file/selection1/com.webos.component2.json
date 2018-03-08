@@ -1,0 +1,11 @@
+{
+    "configs" : [
+    {
+        "data": {
+            "conditionalKey" : "whereMatched"
+        },
+        "where": {
+            "op": "=", "prop": "com.webos.component1.conditionalValue", "val": true
+        }
+    }]
+}

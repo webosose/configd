@@ -1,0 +1,16 @@
+{
+    "layers": [
+    ],
+    "post_process": {
+    },
+    "post_process": [
+        {
+            "command": "ls",
+            "note": "triggered on save"
+        },
+        {
+            "command": "ls",
+            "note": "triggered on save"
+        }
+    ]
+}

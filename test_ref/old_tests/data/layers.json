@@ -1,0 +1,49 @@
+{
+    "layers": [
+        {
+            "base_dir": "/etc/configd/layers/base",
+            "name": "default",
+            "priority": 1
+        },
+        {
+            "base_dir": "/etc/configd/layers/country",
+            "name": "Broadcast Country Code",
+            "priority": 2,
+            "selector": {
+                "luna_cmd": {
+                    "method" : "palm://com.lge.settingsservice/getSystemSettings",
+                    "params" : {"subscribe": true, "category": "option", "keys": ["country"]}
+                },
+                "key": ["settings","country"]
+            }
+        },
+        {
+            "base_dir": "/etc/configd/layers/displaytype",
+            "name": "Display Types",
+            "priority": 3,
+            "selector": {
+                "command": "/etc/configd/scripts/check_display.sh "
+            }
+        },
+        {
+            "base_dir": "/etc/configd/layers/buildtype",
+            "name": "Build Types (production or development)",
+            "priority": 4,
+            "selector": {
+                "command": "/usr/bin/nyx-cmd OSInfo query webos_prerelease"
+            }
+        },
+        {
+            "base_dir": "/etc/configd/layers/devicename",
+            "name": "Device Name",
+            "priority": 5,
+            "selector": {
+                "command": "/usr/bin/nyx-cmd DeviceInfo query device_name"
+            }
+        }
+    ],
+    "post_process": {
+        "note" : "triggered on save",
+        "command": "/usr/bin/node /etc/configd/scripts/post_reconfigure.js"
+    }
+}

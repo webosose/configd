@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName":"@WEBOS_INSTALL_BINDIR@/configd-client-base",
+        "type": "privileged",
+        "allowedNames": ["*"]
+    },
+    "permissions": [
+        {
+            "service":"com.webos.configd.client-base",
+            "inbound":["*"],
+            "outbound":["*"]
+        }
+    ]
+}

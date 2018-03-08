@@ -1,0 +1,7 @@
+{
+  "testCategory1":{
+    "testConfig2":"testConfigSecond",
+    "testConfig":"testConfigFirst",
+    "":"namelessConfig"
+  }
+}

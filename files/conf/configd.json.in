@@ -1,0 +1,7 @@
+{
+    "logger": {
+        "level": 5,
+        "type": 2,
+        "path": "/var/log/configd.log"
+    }
+}

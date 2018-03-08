@@ -1,0 +1,69 @@
+{
+    "layers": [
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_none",
+            "name": "none",
+            "priority": 1
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_string",
+            "name": "string",
+            "priority": 20,
+            "selector": {
+                "string": "selection2"
+            }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_file",
+            "name": "file",
+            "priority": 10,
+            "selector": {
+                "file": "tests/test_configd/config/_data/layers/layer_file/fileselector1"
+            }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_command",
+            "name": "command",
+            "priority": 30,
+            "selector": {
+                "command": "echo 'console1'"
+            }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_luna",
+            "name": "luna",
+            "priority": 40,
+            "selector": {
+                "alternative": {
+                    "string": "selection2"
+                },
+                "luna_cmd": {
+                    "method": "luna://com.lge.settingsservice/getSystemSettings",
+                    "params": {
+                        "subscribe": true,
+                        "category": "option",
+                        "keys": [
+                            "smartServiceCountryCode3"
+                        ]
+                    }
+                },
+                "key": [
+                    "key1",
+                    "key2"
+                ]
+            }
+        }
+    ],
+    "post_process": [
+        {
+            "command": "ls",
+            "note": "triggered on save"
+        }
+     ],
+    "pre_process": [
+        {
+            "command": "/etc/configd/scripts/pre_reconfigure.sh",
+            "note": "triggered on reconfigure to reload data"
+        }
+    ]
+}

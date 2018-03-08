@@ -1,0 +1,14 @@
+{
+    "configd": {
+        "description": "Allows getConfigs",
+        "public": true
+    },
+    "configd.internal": {
+        "description": "Allows configd's private API",
+         "public": false
+    },
+    "configd.private": {
+        "description": "deprecated or incomplete methods",
+        "public": false
+    }
+}

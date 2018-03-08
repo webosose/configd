@@ -1,0 +1,121 @@
+{
+"$schema": "http://json-schema.org/draft-04/schema#",
+"id": "layers.json schema files",
+"description": "layers schema for validating layers.json",
+"type":"object",
+"required":["layers"],
+"properties":{
+    "layers": {
+        "type":"array",
+        "items":[
+                    {"type":"object",
+                     "properties":{
+                                   "base_dir":{
+                                        "type":"string"
+                                        },
+                                   "name":{
+                                        "type":"string"
+                                        },
+                                   "priority": {
+                                        "type":"number"
+                                        }
+                                 }
+                   },
+                   {"type":"object",
+                    "properties":{
+                                  "base_dir":{
+                                       "type":"string"
+                                        },
+                                  "name":{
+                                       "type":"string"
+                                        },
+                                  "priority":{
+                                       "type":"number"
+                                        },
+                                  "selector":{
+                                       "type":"object",
+                                       "properties":{
+                                           "file":{
+                                               "type":"string"
+                                               }
+                                           }
+                                       }
+                                  }
+                   },
+                   {"type":"object",
+                    "properties":{
+                                  "base_dir":{
+                                       "type":"string"
+                                       },
+                                  "name":{
+                                       "type":"string"
+                                       },
+                                  "priority": {
+                                       "type":"number"
+                                       },
+                                  "selector":{
+                                       "type":"object",
+                                       "properties":{
+                                           "luna_cmd":{
+                                                "type":"object",
+                                                "properties":{
+                                                    "method":{
+                                                        "type":"string"
+                                                        },
+                                                    "params":{
+                                                        "type":"object",
+                                                        "properties":{
+                                                             "selector":{
+                                                                 "type":"boolean"
+                                                                 }
+                                                             }
+                                                        }
+                                                    }
+                                           },
+                                           "key":{
+                                               "type":"array",
+                                               "items":{
+                                                    "type":"string"
+                                                    }
+                                           }
+                                       }
+                                  }
+                          }
+                   },
+                   {"type":"object",
+                    "properties":{
+                                  "base_dir":{
+                                       "type":"string"
+                                       },
+                                  "name":{
+                                       "type":"string"
+                                       },
+                                  "priority":{
+                                       "type":"number"
+                                       },
+                                  "selector":{
+                                       "type":"object",
+                                       "properties":{
+                                           "command":{
+                                                "type":"string"
+                                                }
+                                           }
+                                      }
+                                 }
+                   }
+                   ]
+      },
+    "post_process":{
+         "type":"object",
+         "properties":{
+              "command":{
+              "type":"string"
+              },
+              "note":{
+              "type":"string"
+              }
+          }
+       }
+    }
+}
+

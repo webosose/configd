@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "setConfigs schema for validating setConfigs inputs",
+    "id": "Configd.setConfigs",
+    "properties": {
+        "configs": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "configs"
+    ],
+    "type": "object"
+}

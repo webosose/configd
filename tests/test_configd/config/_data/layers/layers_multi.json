@@ -1,0 +1,68 @@
+{
+    "layers": [
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_string",
+            "name": "string",
+            "priority": 12,
+            "selector": {
+                "string": "selection1"
+            }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_file",
+            "name": "file",
+            "priority": 3,
+            "selector": {
+                "file": "tests/test_configd/config/_data/layers/layer_file/fileselector2"
+            }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_command2",
+            "name": "command_additional",
+            "priority": 100,
+            "selector": {
+                "command": "echo 'console3'"
+                }
+        },
+        {
+            "base_dir": "tests/test_configd/config/_data/layers/layer_luna",
+            "name": "luna",
+            "priority": 40,
+            "selector": {
+                "alternative": {
+                    "string": "selection3"
+                },
+                "luna_cmd": {
+                    "method": "luna://com.lge.settingsservice/getSystemSettings",
+                    "params": {
+                        "subscribe": true,
+                        "category": "option",
+                        "keys": [
+                            "smartServiceCountryCode3"
+                        ]
+                    }
+                },
+                "key": [
+                    "key1",
+                    "key2"
+                ]
+            }
+        }
+    ],
+    "pre_process": [
+    {
+        "command": "/etc/configd/scripts/pre_reconfigure.sh",
+        "note": "triggered on reconfigure to reload data"
+        }
+    ],
+    "post_process": [
+        {
+            "note" : "test post_process is not appended",
+            "command" : "ls"
+        },
+        {
+            "note" : "test additional post_process",
+            "command": "ls -la"
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.webos.service.config
+Exec=@WEBOS_INSTALL_SBINDIR@/configd
+Type=static

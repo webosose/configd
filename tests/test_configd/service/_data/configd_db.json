@@ -1,0 +1,25 @@
+{
+	"com.webos.app.inputcommon": {
+		"enableClearVoice": true,
+		"enableSmartSoundMode": false
+	},
+	"randomNumberTest": {
+		"randomNumber": 1
+	},
+	"com.webos.service.cbox": {
+		"thumbnailBackgroundExtraction": {
+			"video": true,
+			"recording": true
+		}
+	},
+    "com.webos.category1": {
+        "key1" : "value1",
+        "key2" : "value2",
+        "key3" : "value3"
+    },
+    "com.webos.category2": {
+        "key1" : "value1",
+        "key2" : "value2",
+        "key3" : "value3"
+    }
+}

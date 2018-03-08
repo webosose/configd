@@ -1,0 +1,9 @@
+{
+    "key1": true,
+    "key2": "value2",
+    "key3": {
+        "object1":"objectValue1",
+        "object2":"objectValue2"
+    },
+    "conditionalValue": true
+}

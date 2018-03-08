@@ -1,0 +1,7 @@
+{
+    "configs" : [{
+        "data" : {
+            "fileKey2": "fileValue2"
+            }
+    }]
+}
