@@ -354,7 +354,6 @@ bool Layer::fetchConfigs(JValue &database)
 {
     JValue data = pbnjson::Object();
     JValue configData = pbnjson::Object();
-    string dirPath;
 
     if (!isSelected()) {
         Logger::warning(MSGID_CONFIGDSERVICE,
@@ -363,12 +362,7 @@ bool Layer::fetchConfigs(JValue &database)
         return false;
     }
 
-    if (m_type == SelectorType_None) {
-        dirPath = getFullDirPath();
-    } else {
-        dirPath = getFullDirPath(true);
-    }
-
+    string dirPath = getFullDirPath(true);
     if (!parseFiles(dirPath, &configData, NULL)) {
         return false;
     }
@@ -387,13 +381,7 @@ bool Layer::fetchConfigs(JsonDB &jsonDB, JsonDB *permissionDB)
         return false;
     }
 
-    string dirPath;
-    if (getType() == SelectorType_None) {
-        dirPath = getFullDirPath();
-    } else {
-        dirPath = getFullDirPath(true);
-    }
-
+    string dirPath = getFullDirPath(true);
     if (!parseFiles(dirPath, NULL, &jsonDB, permissionDB)) {
         return false;
     }

@@ -107,9 +107,7 @@ string Platform::executeCommand(const string &command, const string firstArg, co
     string console = "";
     string newCommand = command + " " + firstArg + " " + secondArg;
 
-    if (!executeCommand(newCommand, console)) {
-        return console;
-    }
+    executeCommand(newCommand, console);
     return console;
 }
 
