@@ -1037,7 +1037,7 @@ bool config_loadConfigsFromFile(char *path, char *fileName, int32_t *errorCode)
 
     if (categoryLength == 0)
     {
-        g_free(category);
+        free(category);
         if (NULL != errorCode)
             *errorCode = CONFIG_INVALID_ARGUMENTS;
         return false;
@@ -1076,7 +1076,7 @@ bool config_loadConfigsFromFile(char *path, char *fileName, int32_t *errorCode)
     }
 
     g_mutex_unlock(&configCacheLock);
-    g_free(category);
+    free(category);
 
     // notify to all watchers
     if (configWatchers)

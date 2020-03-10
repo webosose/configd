@@ -329,11 +329,11 @@ bool Configuration::runPostProcess(JsonDB &jsonDB)
 Done:
     if (inputFilename != NULL) {
         g_unlink(inputFilename);
-        g_free(inputFilename);
+        free(inputFilename);
     }
     if (outputFilename != NULL) {
         g_unlink(outputFilename);
-        g_free(outputFilename);
+        free(outputFilename);
     }
     return result;
 }
