@@ -341,20 +341,33 @@ bool JsonDB::flush()
 
     string configData = m_database.stringify("    ");
 
+    gchar *dirname = g_path_get_dirname(m_filename.c_str());
+    if (g_mkdir_with_parents(dirname, 0755)) {
+        Logger::error(MSGID_CONFIGUREDATA,
+                      LOG_PREPIX_FORMAT "Failed to mkdir %s: %s",
+                      LOG_PREPIX_ARGS, dirname, g_strerror(errno));
+        g_free(dirname);
+        return false;
+    }
+    g_free(dirname);
+
     /**
      * g_file_set_contents() will internally create one temp file and write all the contents into
      * the temp file using write() system call. After written into the file, fsync() gets called.
      * If fsync() is success, then temp file will be renamed back to config DB using rename() system call.
      */
+    GError *gerror = NULL;
     mode_t mask = umask(S_IRWXG | S_IRWXO);
-    if (!g_file_set_contents(m_filename.c_str(), configData.c_str(), configData.length(), NULL)) {
+    if (!g_file_set_contents(m_filename.c_str(), configData.c_str(), configData.length(), &gerror)) {
         Logger::error(MSGID_CONFIGUREDATA,
-                      LOG_PREPIX_FORMAT "Failed to write content into %s",
-                      LOG_PREPIX_ARGS, m_filename.c_str());
+                      LOG_PREPIX_FORMAT "Failed to write content into %s: %s",
+                      LOG_PREPIX_ARGS, m_filename.c_str(), gerror->message);
         umask(mask);
+        g_error_free(gerror);
         return false;
     }
     umask(mask);
+    g_error_free(gerror);
     m_isUpdated = false;
     return true;
 }
