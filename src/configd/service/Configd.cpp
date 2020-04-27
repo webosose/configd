@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,9 @@ void Configd::initialize(GMainLoop *mainLoop, ConfigdListener *listener)
 
     try {
         Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Try to connect bus", LOG_PREPIX_ARGS);
-        AbstractBusFactory::getInstance()->getIHandle()->connect(NAME_CONFIGD);
+        if (!AbstractBusFactory::getInstance()->getIHandle()->connect(NAME_CONFIGD)) {
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in bus connect", LOG_PREPIX_ARGS);
+        }
 
         Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Try to enroll methods", LOG_PREPIX_ARGS);
         AbstractBusFactory::getInstance()->getIHandle()->addMethods("/", Configd::METHOD_TABLE);
@@ -109,8 +111,16 @@ void Configd::eachMessage(shared_ptr<IMessage> message, JsonDB &newDB, JsonDB &o
     JValue newResponsePayload = pbnjson::Object();
     JValue oldResponsePayload = pbnjson::Object();
 
-    msgGetConfigs(oldDB, JsonDB::getPermissionInstance(), message, oldResponsePayload);
-    msgGetConfigs(newDB, JsonDB::getPermissionInstance(), message, newResponsePayload);
+    if (!msgGetConfigs(oldDB, JsonDB::getPermissionInstance(), message, oldResponsePayload)) {
+        Logger::warning(MSGID_CONFIGDSERVICE,
+                        LOG_PREPIX_FORMAT "Error in oldDB msgGetConfigs",
+                        LOG_PREPIX_ARGS);
+    }
+    if (!msgGetConfigs(newDB, JsonDB::getPermissionInstance(), message, newResponsePayload)) {
+        Logger::warning(MSGID_CONFIGDSERVICE,
+                        LOG_PREPIX_FORMAT "Error in newDB msgGetConfigs",
+                        LOG_PREPIX_ARGS);
+    }
 
     if (oldResponsePayload == newResponsePayload) {
         Logger::debug(LOG_PREPIX_FORMAT "Same response) Client (%s) Request (%s)",
@@ -146,7 +156,9 @@ void Configd::postGetConfigs(JsonDB &newDB, JsonDB &oldDB)
 {
     Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Start Post-getConfigs", LOG_PREPIX_ARGS);
     shared_ptr<IMessages> container = AbstractBusFactory::getInstance()->getIMessages("getConfigs");
-    container->each(*this, newDB, oldDB);
+    if (!container->each(*this, newDB, oldDB)) {
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in postGetConfigs each", LOG_PREPIX_ARGS);
+    }
     Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "End Post-getConfigs", LOG_PREPIX_ARGS);
 }
 
@@ -242,7 +254,11 @@ bool Configd::getConfigs(LSMessage &message)
 
     if (request->isSubscription()) {
         subscribed = true;
-        AbstractBusFactory::getInstance()->getIMessages("getConfigs")->pushMessage(request);
+        if (!AbstractBusFactory::getInstance()->getIMessages("getConfigs")->pushMessage(request)) {
+            Logger::warning(MSGID_CONFIGDSERVICE,
+                            LOG_PREPIX_FORMAT "Error in pushMessage",
+                            LOG_PREPIX_ARGS);
+        }
     }
 
     errorCode = m_configdListener->onGetConfigs();

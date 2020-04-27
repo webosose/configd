@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 LG Electronics, Inc.
+// Copyright (c) 2016-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,7 +196,9 @@ void Layer::onReceiveCall(JValue &response)
                     LOG_PREPIX_ARGS_EXT, getName().c_str(),
                     result.asString().c_str(),
                     m_selector["key"].stringify().c_str(), response.stringify().c_str());
-        setSelection(result.asString());
+        if (!setSelection(result.asString())) {
+            Logger::debug(LOG_PREPIX_FORMAT "Error in setSelection", LOG_PREPIX_ARGS);
+        }
     } else {
         Logger::warning(MSGID_CONFIGURE,
                         LOG_PREPIX_FORMAT_EXT "Failed to get valid key (%s in %s)",
@@ -340,7 +342,11 @@ bool Layer::parseFiles(string &dirPath, JValue *database, JsonDB *jsonDB, JsonDB
                                   key.c_str());
                 }
                 if (config.hasKey("permissions")) {
-                    permissionsDB->insert(name, key, config["permissions"]);
+                    if (!permissionsDB->insert(name, key, config["permissions"])) {
+                        Logger::debug(LOG_PREPIX_FORMAT "Failed to insert '%s' key in permission DB",
+                                      LOG_PREPIX_ARGS,
+                                      key.c_str());
+                    }
                 }
             }
         }
@@ -448,12 +454,12 @@ bool Layer::findSelection(const JValue &selector, string &selection)
     return true;
 }
 
-bool Layer::select()
+void Layer::select()
 {
     if (isReadOnlyType()) {
         Logger::debug(LOG_PREPIX_FORMAT_EXT "ReadOnly Type (Skipped)",
                       LOG_PREPIX_ARGS_EXT, m_name.c_str());
-        return false;
+        return;
     }
 
     Logger::debug(LOG_PREPIX_FORMAT_EXT "Start to find selection", LOG_PREPIX_ARGS_EXT, m_name.c_str());
@@ -462,12 +468,12 @@ bool Layer::select()
         Logger::warning(MSGID_CONFIGURE,
                         LOG_PREPIX_FORMAT_EXT "Failed to select (Not Changed into 'invalid' type. Retry Next)",
                         LOG_PREPIX_ARGS_EXT, m_name.c_str());
-        return false;
+        return;
     }
     if (selection.empty()) {
         Logger::verbose(LOG_PREPIX_FORMAT_EXT "Selection candidate is empty. It might be luna type",
                         LOG_PREPIX_ARGS_EXT, m_name.c_str());
-        return true;
+        return;
     }
 
     if (!setSelection(selection)) {
@@ -475,7 +481,6 @@ bool Layer::select()
                         LOG_PREPIX_FORMAT_EXT "Failed to select (Not Changed into 'invalid' type. Retry Next)",
                         LOG_PREPIX_ARGS_EXT, m_name.c_str());
     }
-    return isSelected();
 }
 
 bool Layer::setSelection(string selection)
@@ -617,7 +622,9 @@ void Layer::fromJson(JValue json)
     if (!json.hasKey("base") || !json["base"].isString() || json["base"].asString() != m_baseDir)
         return;
     if (json.hasKey("selection") && json["selection"].isString()) {
-        setSelection(json["selection"].asString());
+        if (!setSelection(json["selection"].asString())) {
+            Logger::debug(LOG_PREPIX_FORMAT "Error in setSelection", LOG_PREPIX_ARGS);
+        }
     }
 }
 

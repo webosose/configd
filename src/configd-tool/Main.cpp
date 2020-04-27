@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 LG Electronics, Inc.
+// Copyright (c) 2017-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -122,9 +122,12 @@ void printFiles()
 
 void deleteFiles()
 {
-    Platform::deleteFile(JsonDB::FILENAME_MAIN_DB);
-    Platform::deleteFile(JsonDB::FILENAME_FACTORY_DB);
-    Platform::deleteFile(JsonDB::FILENAME_DEBUG_DB);
+    if (Platform::deleteFile(JsonDB::FILENAME_MAIN_DB))
+        cout << "MainDB " << JsonDB::FILENAME_MAIN_DB << " deleted" << endl;
+    if (Platform::deleteFile(JsonDB::FILENAME_FACTORY_DB))
+        cout << "FactoryDB " << JsonDB::FILENAME_FACTORY_DB << " deleted" << endl;
+    if (Platform::deleteFile(JsonDB::FILENAME_DEBUG_DB))
+        cout << "DebugDB " << JsonDB::FILENAME_DEBUG_DB << " deleted" << endl;
     system("rm /tmp/configd_*");
 }
 
@@ -179,7 +182,10 @@ int main(int argc, char *argv[])
     } else if (option_search != NULL && remaining_size == 1) {
         JsonDB db;
         db.load(option_remaining[0]);
-        db.searchKey(option_search, consoleResult);
+        if (!db.searchKey(option_search, consoleResult)) {
+            errorText = (char*)"Cannot search from database";
+            goto Exit;
+        }
         if (consoleResult.isNull() || consoleResult.objectSize() == 0) {
             errorText = (char*)"Cannot find config matched input regular expression";
             goto Exit;

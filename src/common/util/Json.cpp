@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,19 +29,6 @@ void Json::addUniqueStrIntoArray(JValue array, string uniqueStr)
     }
 
     array.append(uniqueStr);
-}
-
-void Json::removeUniqueStrIntoArray(JValue array, string uniqueStr)
-{
-    if (!array.isArray() || uniqueStr.empty())
-        return;
-
-    for (ssize_t i = 0; i < array.arraySize(); i++) {
-        if (array[i].asString() == uniqueStr) {
-            jarray_remove(array.peekRaw(), i);
-            return;
-        }
-    }
 }
 
 bool Json::getValueWithKeys(JValue root, JValue keys, JValue &value)

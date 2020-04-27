@@ -43,7 +43,7 @@ public:
         return m_baseJsonDB.getFilename();
     }
 
-    bool setBase(const string& filename);
+    void setBase(const string& filename);
 
 private:
     JsonDB m_baseJsonDB;

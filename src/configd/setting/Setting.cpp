@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 LG Electronics, Inc.
+// Copyright (c) 2017-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -106,11 +106,12 @@ void Setting::parsePlatform()
 
 void Setting::applySettings()
 {
-    Logger::getInstance()->setLogType(getLogType(), getLogPath());
+    if (!Logger::getInstance()->setLogType(getLogType(), getLogPath()))
+        cerr << "Error in setLogType" << endl;
     Logger::getInstance()->setLogLevel(getLogLevel());
 }
 
-bool Setting::setSetting(JValue& source, JValue& local)
+void Setting::setSetting(JValue& source, JValue& local)
 {
     auto it = source.children();
     for (auto object = it.begin() ; object != it.end() ; ++object) {
@@ -125,7 +126,6 @@ bool Setting::setSetting(JValue& source, JValue& local)
             setSetting(value, v);
         }
     }
-    return true;
 }
 
 JValue Setting::getSetting(initializer_list<const char*> list)
@@ -145,16 +145,16 @@ JValue Setting::getSetting(initializer_list<const char*> list)
     return result;
 }
 
-bool Setting::loadSetting(const string filename)
+void Setting::loadSetting(const string filename)
 {
     JValue value = JDomParser::fromFile(filename.c_str());
     if (!value.isValid() || value.isNull()) {
         Logger::error(MSGID_JSON_PARSE_FILE_ERR,
                       LOG_PREPIX_FORMAT "Fail Invalid Json formmated file %s",
                       LOG_PREPIX_ARGS, filename.c_str());
-        return false;
+        return;
     }
-    return setSetting(value, m_configuration);
+    setSetting(value, m_configuration);
 }
 
 LogType Setting::getLogType()

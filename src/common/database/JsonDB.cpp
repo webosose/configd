@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,9 @@ bool JsonDB::getFullDBName(const string &categoryName, const JValue &category, J
                           LOG_PREPIX_ARGS, categoryName.c_str());
             continue;
         }
-        result.put(fullName, config.second);
+        if (!result.put(fullName, config.second)) {
+            return false;
+        }
     }
     return true;
 }
@@ -106,19 +108,18 @@ JsonDB::~JsonDB()
     }
 }
 
-bool JsonDB::copy(JsonDB& db)
+void JsonDB::copy(JsonDB& db)
 {
     if (m_database == db.m_database) {
         Logger::warning(MSGID_CONFIGUREDATA,
                         LOG_PREPIX_FORMAT "Failed to copy JsonDB because those are same values",
                         LOG_PREPIX_ARGS);
-        return true;
+        return;
     }
 
     // Only database values are copied
     m_database = db.m_database.duplicate();
     m_isUpdated = true;
-    return true;
 }
 
 bool JsonDB::insert(const string& fullName, JValue value)
@@ -136,7 +137,8 @@ bool JsonDB::insert(const string& fullName, JValue value)
 bool JsonDB::insert(const string &categoryName, const string &configName, JValue value)
 {
     if (!m_database.hasKey(categoryName)) {
-        m_database.put(categoryName, pbnjson::Object());
+        if (!m_database.put(categoryName, pbnjson::Object()))
+            return false;
     }
 
     if (m_database[categoryName].hasKey(configName) &&
@@ -151,17 +153,20 @@ bool JsonDB::insert(const string &categoryName, const string &configName, JValue
                         value.stringify("    ").c_str());
     }
 
-    m_database[categoryName].put(configName, value);
+    if (!m_database[categoryName].put(configName, value))
+        return false;
+
     m_isUpdated = true;
     return true;
 }
 
-bool JsonDB::load(const string &filename)
+void JsonDB::load(const string &filename)
 {
     if (filename.empty()) {
-        Logger::debug(LOG_PREPIX_FORMAT_EXT "Failed, empty file name received",
-                      LOG_PREPIX_ARGS_EXT, filename.c_str());
-        return false;
+        Logger::error(MSGID_CONFIGUREDATA,
+                      LOG_PREPIX_FORMAT "Failed to load database (%s)",
+                      LOG_PREPIX_ARGS, filename.c_str());
+        return;
     }
 
     JSchema schema = JSchema::fromFile(CONFIGFEATUESLIST_SCHEMA);
@@ -182,7 +187,6 @@ bool JsonDB::load(const string &filename)
                         LOG_PREPIX_ARGS_EXT, m_name.c_str());
     }
     m_isUpdated = false;
-    return true;
 }
 
 bool JsonDB::remove(const string &fullName)
@@ -221,7 +225,7 @@ bool JsonDB::remove(const string &categoryName, const string &configName)
     return true;
 }
 
-bool JsonDB::merge(JValue& database)
+void JsonDB::merge(JValue& database)
 {
     for (JValue::KeyValue category : database.children()) {
         string categoryName = category.first.asString();
@@ -236,12 +240,11 @@ bool JsonDB::merge(JValue& database)
             }
         }
     }
-    return true;
 }
 
-bool JsonDB::merge(JsonDB& jsonDB)
+void JsonDB::merge(JsonDB& jsonDB)
 {
-    return merge(jsonDB.getDatabase());
+    merge(jsonDB.getDatabase());
 }
 
 bool JsonDB::fetch(const string &categoryName, const string &configName, JValue &result)
@@ -316,17 +319,23 @@ bool JsonDB::searchKey(const string &regEx, JValue &result)
                               LOG_PREPIX_ARGS,
                               e.what());
             }
+            catch (exception& e) {
+                Logger::debug(LOG_PREPIX_FORMAT "regex_search failed: %s",
+                              LOG_PREPIX_ARGS,
+                              e.what());
+            }
         }
     }
     return returnValue;
 }
 
-bool JsonDB::clear()
+void JsonDB::clear()
 {
-    Platform::deleteFile(m_filename.c_str());
+    if (!Platform::deleteFile(m_filename.c_str())) {
+        Logger::debug(LOG_PREPIX_FORMAT "Unable to delete file (%s)", LOG_PREPIX_ARGS, m_filename.c_str());
+    }
     m_database = pbnjson::Object();
     m_isUpdated = true;
-    return false;
 }
 
 bool JsonDB::flush()
@@ -382,14 +391,13 @@ string &JsonDB::getFilename()
     return m_filename;
 }
 
-bool JsonDB::setFilename(const string &filename)
+void JsonDB::setFilename(const string &filename)
 {
     if (m_filename == filename) {
-        return true;
+        return;
     }
     m_filename = filename;
     m_isUpdated = true;
-    return true;
 }
 
 bool JsonDB::isUpdated()

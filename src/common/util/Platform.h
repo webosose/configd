@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ public:
     static bool executeCommand(const string &command, string &console);
 
     static string concatPaths(string parent, string child);
-    static string& extractFileName(string &fileName, string &name, string &extension);
-    static string& trim(string& str);
+    static void extractFileName(string &fileName, string &name, string &extension);
+    static void trim(string& str);
     static string timeStr();
 
 private:

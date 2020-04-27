@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,10 +39,14 @@ Configuration::Configuration()
     string defaultConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers.json");
     string debugConf = Platform::concatPaths(PATH_DEBUG_LAYERS_DIR, "layers_debug.json");
 
-    if (!append(machineConf))
-        append(defaultConf);
-    append(distroConf);
-    append(debugConf);
+    if (!append(machineConf)) {
+        if (!append(defaultConf))
+            Logger::warning(MSGID_CONFIGURE, LOG_PREPIX_FORMAT "Error in defaultConf append", LOG_PREPIX_ARGS);
+    }
+    if (!append(distroConf))
+        Logger::warning(MSGID_CONFIGURE, LOG_PREPIX_FORMAT "Error in distroConf append", LOG_PREPIX_ARGS);
+    if (!append(debugConf))
+        Logger::warning(MSGID_CONFIGURE, LOG_PREPIX_FORMAT "Error in debugConf append", LOG_PREPIX_ARGS);
     Logger::debug(LOG_PREPIX_FORMAT "Layers Version is %s", LOG_PREPIX_ARGS, m_version.c_str());
 }
 
@@ -149,7 +153,11 @@ bool Configuration::append(std::string filename)
             continue;
         }
         Layer layerInfo(configuration["layers"][i]);
-        insertLayer(layerInfo);
+        if (!insertLayer(layerInfo)) {
+            Logger::warning(MSGID_CONFIGUREDATA,
+                            LOG_PREPIX_FORMAT "insertLayer error",
+                            LOG_PREPIX_ARGS);
+        }
     }
 
     return true;
@@ -199,7 +207,8 @@ bool Configuration::isAllSelected()
 void Configuration::updateSelections(JsonDB &jsonDB)
 {
     JValue layers = pbnjson::Object();
-    jsonDB.fetch(JsonDB::FULLNAME_LAYERS, layers);
+    if (!jsonDB.fetch(JsonDB::FULLNAME_LAYERS, layers))
+        Logger::warning(MSGID_CONFIGUREDATA, LOG_PREPIX_FORMAT "Error in database fetch", LOG_PREPIX_ARGS);
 
     if (!layers.hasKey(JsonDB::FULLNAME_LAYERS))
         return;
@@ -225,12 +234,11 @@ void Configuration::fetchConfigs(JValue &database)
     }
 }
 
-bool Configuration::fetchConfigs(JsonDB &jsonDB, JsonDB *permissionDB)
+void Configuration::fetchConfigs(JsonDB &jsonDB, JsonDB *permissionDB)
 {
     for (auto it = m_layers.begin(); it != m_layers.end(); ++it) {
         it->fetchConfigs(jsonDB, permissionDB);
     }
-    return true;
 }
 
 void Configuration::fetchLayers(JsonDB &jsonDB)
@@ -242,7 +250,7 @@ void Configuration::fetchLayers(JsonDB &jsonDB)
         layers.put(it->getName(), it->toJson());
 
         // Some components use the following configs.
-        // If you want to delete following configs, do test in firstUse in TV
+        // If you want to delete following configs, do test in firstUse in other distro.
         if (it->isSelected()) {
             selections.put(it->getLeafDirPath(), it->getSelection());
         }
@@ -308,7 +316,9 @@ bool Configuration::runPostProcess(JsonDB &jsonDB)
     // and give that file as arg to script
     preDB.copy(jsonDB);
     preDB.setFilename(inputFilename);
-    preDB.flush();
+    if (!preDB.flush()) {
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in database flush", LOG_PREPIX_ARGS);
+    }
     if (!Platform::isFileExist(inputFilename)) {
         result = false;
         goto Done;

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,7 +75,8 @@ static gboolean lazyDbgPrintHandle(gpointer userData)
 
     g_mutex_lock(&lazyMsgsLock);
 
-    for (GSList *iter = lazyMsgs; iter;) {
+    GSList *iter = lazyMsgs;
+    while (iter) {
         lazyMsg_t *lazyMsgTmp = (lazyMsg_t*) iter->data;
         gint64 tsLDiff = tsNow - lazyMsgTmp->tsFirst;
         gint64 tsSDiff = tsNow - lazyMsgTmp->tsLast;
@@ -92,7 +93,7 @@ static gboolean lazyDbgPrintHandle(gpointer userData)
 
         if (timeOff || countOff) {
             // condition to flush
-            LOG_INFO_PAIRS(MSGID_CONFIGDSERVICE, 2, PMLOGKFV("uptime", "%lld", lazyMsgTmp->tsFirst), PMLOGKFV("count", "%d", lazyMsgTmp->count), "%s", lazyMsgTmp->msg);
+            LOG_INFO_PAIRS(MSGID_CONFIGDSERVICE, 2, PMLOGKFV("uptime", "%" G_GINT64_FORMAT, lazyMsgTmp->tsFirst), PMLOGKFV("count", "%" G_GINT32_FORMAT, lazyMsgTmp->count), "%s", lazyMsgTmp->msg);
 
             // RESET counter
             lazyMsgTmp->count = 0;

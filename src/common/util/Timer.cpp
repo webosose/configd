@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Timer.h"
+
+#include "util/Logger.hpp"
 
 int Timer::_expired(void* ctx)
 {
@@ -51,7 +53,9 @@ bool Timer::wait(int ms)
     m_isExpired = false;
 
     while (m_isWaiting) {
-        g_main_context_iteration(g_main_context_default(), true);
+        if (TRUE != g_main_context_iteration(g_main_context_default(), true)) {
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in g_main_context_iteration", LOG_PREPIX_ARGS);
+        }
     }
     return m_isExpired;
 }
@@ -66,14 +70,15 @@ bool Timer::isExpired()
     return m_isExpired;
 }
 
-bool Timer::clear()
+void Timer::clear()
 {
     if (m_isWaiting) {
         m_isWaiting = false;
-        g_source_remove(m_timerId);
+        if (TRUE != g_source_remove(m_timerId)) {
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in g_source_remove", LOG_PREPIX_ARGS);
+        }
     }
     m_isExpired = false;
     m_timerId = -1;
     m_timeout = -1;
-    return true;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,8 @@ bool lock_process()
     result = lockf(fd, F_TLOCK, 0);
 
     if (result < 0) {
-        close(fd);
+        if (-1 == close(fd))
+            Logger::warning(MSGID_MAIN, LOG_PREPIX_FORMAT "Error in file close", LOG_PREPIX_ARGS);
         return false;
     }
 
@@ -81,7 +82,8 @@ bool lock_process()
     }
 
     // write the pid to the file
-    snprintf(pidStr, sizeof(pidStr), "%d\n", pid);
+    if (0 > snprintf(pidStr, sizeof(pidStr), "%d\n", pid))
+        Logger::warning(MSGID_MAIN, LOG_PREPIX_FORMAT "Error in snprintf", LOG_PREPIX_ARGS);
     pidStrLen = (int) strlen(pidStr);
     result = (int) write(fd, pidStr, (size_t) pidStrLen);
 
@@ -89,7 +91,8 @@ bool lock_process()
         retValue = false;
     }
 
-    close(fd);
+    if (-1 == close(fd))
+        Logger::warning(MSGID_MAIN, LOG_PREPIX_FORMAT "Error in file close", LOG_PREPIX_ARGS);
     return retValue;
 }
 

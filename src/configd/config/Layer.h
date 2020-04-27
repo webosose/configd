@@ -71,7 +71,7 @@ public:
     void fromJson(JValue json);
     JValue toJson();
 
-    bool select();
+    void select();
     bool isSelected();
     bool isReadOnlyType();
     void clearSelection();

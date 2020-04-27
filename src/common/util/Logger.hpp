@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 LG Electronics, Inc.
+// Copyright (c) 2017-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ public:
         m_strStream.str("");
         m_strStream.clear();
 
-        m_fileStream.flush();
+        if (!m_fileStream.flush())
+            cerr << "Error in filestream flush" << endl;
         m_fileStream.clear();
         m_fileStream.close();
     }
@@ -147,47 +148,50 @@ public:
     }
 
     template<typename... Ts>
-    static bool verbose(const char* format, Ts ... args)
+    static void verbose(const char* format, Ts ... args)
     {
         LogType type = Logger::getInstance()->getLogType();
         if (!(LogType_Console == type || LogType_File == type)) {
-            return false;
+            return;
         }
-        return (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Verbose)) ?
-                Logger::getInstance()->write("verbose", "", format, args...) : false;
+        if (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Verbose)) {
+            Logger::getInstance()->write("verbose", "", format, args...);
+        }
     }
 
     template<typename... Ts>
-    static bool debug(const char* format, Ts... args)
+    static void debug(const char* format, Ts... args)
     {
-        return (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Debug)) ?
-                Logger::getInstance()->write("debug", "", format, args...) : false;
+        if (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Debug)) {
+            Logger::getInstance()->write("debug", "", format, args...);
+        }
     }
 
     template<typename... Ts>
-    static bool info(const char* msgid, const char* format, Ts... args)
+    static void info(const char* msgid, const char* format, Ts... args)
     {
-        return (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Info)) ?
-                Logger::getInstance()->write("info", msgid, format, args...) : false;
+        if (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Info)) {
+            Logger::getInstance()->write("info", msgid, format, args...);
+        }
     }
 
     template<typename ... Ts>
-    static bool warning(const char* msgid, const char* format, Ts ... args)
+    static void warning(const char* msgid, const char* format, Ts ... args)
     {
-        return (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Warning)) ?
-                Logger::getInstance()->write("warning", msgid, format, args...) : false;
+        if (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Warning)) {
+            Logger::getInstance()->write("warning", msgid, format, args...);
+        }
     }
 
     template<typename ... Ts>
-    static bool error(const char* msgid, const char* format, Ts ... args)
+    static void error(const char* msgid, const char* format, Ts ... args)
     {
-        return (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Error)) ?
-                Logger::getInstance()->write("error", msgid, format, args...) : false;
+        if (Logger::getInstance()->checkEnabledLogLevel(LogLevel_Error)) {
+            Logger::getInstance()->write("error", msgid, format, args...);
+        }
     }
-
 
 private:
-
     bool checkEnabledLogLevel(LogLevel level)
     {
         return (m_level >= level);
@@ -227,7 +231,9 @@ private:
     bool writeConsole(const char* logLevel, const char* msgid, const char* format, Ts... args)
     {
         struct timespec time;
-        clock_gettime(CLOCK_MONOTONIC, &time);
+        if (-1 == clock_gettime(CLOCK_MONOTONIC, &time)) {
+            cerr << "Error in clock_gettime" << endl;
+        }
 
         printf("[%5ld.%09ld] [%-7s] %-15s ", time.tv_sec, time.tv_nsec, logLevel, msgid);
         printf(format, args...);
@@ -258,7 +264,9 @@ private:
     bool writeFile(const char* logLevel, const char* msgid, const char* format, Ts... args)
     {
         struct timespec time;
-        clock_gettime(CLOCK_MONOTONIC, &time);
+        if (-1 == clock_gettime(CLOCK_MONOTONIC, &time)) {
+            cerr << "Error in clock_gettime" << endl;
+        }
         int cnt = 0;
 
         if (m_fileStream.fail() || !m_fileStream.is_open() || m_logFilePath == "") {
@@ -284,11 +292,15 @@ private:
             return false;
         }
 
-        fin.seekg(std::ios::beg);
+        if (!fin.seekg(std::ios::beg)) {
+            return false;
+        }
 
         string str(1024, '\0');
         while (!fin.fail() || !fin.eof()) {
-            fin.getline(&str[0], 1024, '\n');
+            if (!fin.getline(&str[0], 1024, '\n')) {
+                break;
+            }
             if (str.find(targetStr) != string::npos && str.find(level) != string::npos) {
                 return true;
             }
@@ -298,8 +310,12 @@ private:
 
     bool findFromMemory(const char* level, const char* targetStr)
     {
-        m_strStream.seekg(ios_base::beg);
-        for (string line ; getline(m_strStream, line, '\n') ; ) {
+        if (!m_strStream.seekg(ios_base::beg)) {
+            return false;
+        }
+
+        string line;
+        while (getline(m_strStream, line, '\n')) {
             if (line.find(targetStr) != string::npos && line.find(level) != string::npos) {
                 return true;
             }
@@ -319,7 +335,8 @@ private:
         }
 
         if (!m_fileStream.fail() && m_fileStream.is_open()) {
-            m_fileStream.flush();
+            if (!m_fileStream.flush())
+                cerr << "Error in filestream flush" << endl;
             m_fileStream.clear();
             m_fileStream.close();
         }

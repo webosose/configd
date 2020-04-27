@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -112,11 +112,11 @@ public:
     JsonDB(string name = "Unknown Database");
     virtual ~JsonDB();
 
-    bool load(const string &filename);
-    bool copy(JsonDB& jsonDB);
-    bool merge(JValue& database);
-    bool merge(JsonDB& jsonDB);
-    bool clear();
+    void load(const string &filename);
+    void copy(JsonDB& jsonDB);
+    void merge(JValue& database);
+    void merge(JsonDB& jsonDB);
+    void clear();
     bool flush();
 
     bool insert(const string &fullName, JValue value);
@@ -129,7 +129,7 @@ public:
 
     JValue &getDatabase();
     string &getFilename();
-    bool setFilename(const string &filename);
+    void setFilename(const string &filename);
     bool isUpdated();
     bool isEqualDatabase(JsonDB& jsonDB);
     bool isEqualFilename(JsonDB& jsonDB);

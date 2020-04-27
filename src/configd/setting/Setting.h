@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 LG Electronics, Inc.
+// Copyright (c) 2017-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public:
     void initialize();
     virtual void onReceiveCall(JValue &response);
 
-    bool loadSetting(const string filename);
+    void loadSetting(const string filename);
 
     // getters
     LogType getLogType();
@@ -70,7 +70,7 @@ private:
     void parsePlatform();
     void applySettings();
 
-    bool setSetting(JValue& value, JValue& local);
+    void setSetting(JValue& value, JValue& local);
     JValue getSetting(initializer_list<const char*> list);
 
     static const char* DEFAULT_SETTING_FILE;

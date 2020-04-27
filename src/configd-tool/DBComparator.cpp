@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 LG Electronics, Inc.
+// Copyright (c) 2017-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ JValue DBComparator::compareTwoFiles(const char* A, const char* B)
                 }
 
                 if (diffValue.objectSize() > 0) {
-                    key.put( categoryName + "." + configName, diffValue);
+                    key.put(categoryName + "." + configName, diffValue);
                     changedKeys.append(key);
                 }
             }
@@ -174,7 +174,9 @@ JValue DBComparator::printDiffObject(JValue objectA, JValue objectB)
 JValue DBComparator::getConfig(const string fullname)
 {
     JValue result = pbnjson::Object();
-    m_baseJsonDB.fetch(fullname, result);
+    if (!m_baseJsonDB.fetch(fullname, result)) {
+        cerr << "Error in database fetch" << endl;
+    }
     return result;
 }
 
@@ -185,7 +187,7 @@ bool DBComparator::isEqual(const string& filename)
     return m_baseJsonDB.isEqualDatabase(db);
 }
 
-bool DBComparator::setBase(const string& filename)
+void DBComparator::setBase(const string& filename)
 {
     return m_baseJsonDB.load(filename);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public:
     bool wait(int ms);
     bool isWaiting();
     bool isExpired();
-    bool clear();
+    void clear();
 
 private:
     static int _expired(void* ctx);

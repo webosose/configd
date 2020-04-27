@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@
 #include "service/ErrorDB.h"
 #include "service/ls2/LS2BusFactory.h"
 #include "setting/Setting.h"
-#include "util/Platform.h"
 #include "util/Json.h"
+#include "util/Platform.h"
 
 Manager::Manager()
     : m_isLoaded(false)
@@ -48,7 +48,9 @@ void Manager::initialize()
     Logger::info(MSGID_MANAGER, LOG_PREPIX_FORMAT "Initialize Bus Instance", LOG_PREPIX_ARGS);
     Configd::getInstance()->initialize(m_mainLoop, this);
     Setting::getInstance().initialize();
-    load();
+    if (!load()) {
+        Logger::debug(LOG_PREPIX_FORMAT "Error in manager load", LOG_PREPIX_ARGS);
+    }
 }
 
 void Manager::run()
@@ -97,9 +99,11 @@ int Manager::onReconfigure(int timeout)
                  LOG_PREPIX_ARGS, timeout);
 
     if (timeout < Manager::MS_MINIMAL_DELAY) {
-        Manager::getInstance()->reconfigure(true, false);
+        if (Manager::getInstance()->reconfigure(true, false))
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in reconfigure", LOG_PREPIX_ARGS);
     } else {
-        Manager::getInstance()->reconfigure(true, true, timeout);
+        if (!Manager::getInstance()->reconfigure(true, true, timeout))
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in reconfigure", LOG_PREPIX_ARGS);
     }
 
     return ErrorDB::ERRORCODE_NOERROR;
@@ -131,9 +135,11 @@ void Manager::onSelectionChanged(Layer &layer, string &oldSelection, string &new
 
     // MS_DEFAULT_DELAY - In order to avoid multiple reconfigurations
     // Subscriptions can be available at once.
-    Manager::getInstance()->reconfigure(layer.requirePreProcessing(),
-                                        layer.requirePostProcessing(),
-                                        delay);
+    if (!Manager::getInstance()->reconfigure(layer.requirePreProcessing(),
+                                             layer.requirePostProcessing(),
+                                             delay)) {
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in reconfigure", LOG_PREPIX_ARGS);
+    }
 }
 
 bool Manager::load()
@@ -142,7 +148,8 @@ bool Manager::load()
 
     JValue layersVersion;
     JsonDB::getMainInstance().load(JsonDB::FILENAME_MAIN_DB);
-    JsonDB::getMainInstance().fetch(JsonDB::FULLNAME_LAYERSVERSION, layersVersion);
+    if (!JsonDB::getMainInstance().fetch(JsonDB::FULLNAME_LAYERSVERSION, layersVersion))
+        Logger::warning(MSGID_CONFIGUREDATA, LOG_PREPIX_FORMAT "Error in main database fetch", LOG_PREPIX_ARGS);
     if (layersVersion.objectSize() == 0 ||
        (layersVersion[JsonDB::FULLNAME_LAYERSVERSION].asString() != Configuration::getInstance().getLayersVersion())) {
         JsonDB::getMainInstance().clear();
@@ -155,12 +162,15 @@ bool Manager::load()
     if (!isLoadExistDB) {
         // There is no main db file. (FirstUse or Reboot during reconfigure)
         // configd needs to generate main db (pre-processing : true / post-processing : false)
-        Configuration::getInstance().runPreProcess();
+        if (!Configuration::getInstance().runPreProcess())
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in runPreProcess", LOG_PREPIX_ARGS);
         Configuration::getInstance().selectAll();
         Configuration::getInstance().fetchConfigs(JsonDB::getMainInstance(), &JsonDB::getPermissionInstance());
         Configuration::getInstance().fetchLayers(JsonDB::getMainInstance());
-        JsonDB::getMainInstance().flush();
-        JsonDB::getPermissionInstance().flush();
+        if (!JsonDB::getMainInstance().flush())
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in main database flush", LOG_PREPIX_ARGS);
+        if (!JsonDB::getPermissionInstance().flush())
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in permission database flush", LOG_PREPIX_ARGS);
     } else {
         JsonDB::getMainInstance().load(JsonDB::FILENAME_MAIN_DB);
         Configuration::getInstance().updateSelections(JsonDB::getMainInstance());
@@ -175,7 +185,8 @@ bool Manager::load()
                      LOG_PREPIX_FORMAT "Apply Fake Factory database",
                      LOG_PREPIX_ARGS);
         JsonDB::getFactoryInstance().merge(JsonDB::getFakeFactoryInstance());
-        JsonDB::getFactoryInstance().flush();
+        if (!JsonDB::getFactoryInstance().flush())
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in factory database flush", LOG_PREPIX_ARGS);
     }
 
     // Handle UnifiedDB
@@ -232,8 +243,10 @@ bool Manager::reconfigure(bool runPreProcess, bool runPostProcess, int delayTime
 
     if (savedRunPreProcess) {
         Logger::debug(LOG_PREPIX_FORMAT "Start PreProcess", LOG_PREPIX_ARGS);
-        Configuration::getInstance().runPreProcess();
+        if (!Configuration::getInstance().runPreProcess())
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in runPreProcess", LOG_PREPIX_ARGS);
         writeDebugDatabase(JsonDB::FULLNAME_DEBUG_PREPROCESS);
+
     }
 
     Configuration::getInstance().setListener(nullptr);
@@ -244,12 +257,15 @@ bool Manager::reconfigure(bool runPreProcess, bool runPostProcess, int delayTime
 
     if (savedRunPostProcess) {
         Logger::debug(LOG_PREPIX_FORMAT "Start PostProcess", LOG_PREPIX_ARGS);
-        Configuration::getInstance().runPostProcess(JsonDB::getMainInstance());
+        if (!Configuration::getInstance().runPostProcess(JsonDB::getMainInstance()))
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in runPostProcess", LOG_PREPIX_ARGS);
         writeDebugDatabase(JsonDB::FULLNAME_DEBUG_POSTPROCESS);
     }
 
-    JsonDB::getMainInstance().flush();
-    JsonDB::getPermissionInstance().flush();
+    if (!JsonDB::getMainInstance().flush())
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in main database flush", LOG_PREPIX_ARGS);
+    if (!JsonDB::getPermissionInstance().flush())
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in permission database flush", LOG_PREPIX_ARGS);
     updateUnifiedDatabase("reconfigure");
     writeDebugDatabase(JsonDB::FULLNAME_DEBUG_RECONFIGURE);
 
@@ -286,7 +302,8 @@ void Manager::updateUnifiedDatabase(string reason)
 
     string filename = "/tmp/configd_" + Platform::timeStr() + "_before_" + reason + ".json";
     oldUnifiedDB.setFilename(filename);
-    oldUnifiedDB.flush();
+    if (!oldUnifiedDB.flush())
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in old unified database flush", LOG_PREPIX_ARGS);
 }
 
 void Manager::writeDebugDatabase(string fullname)
@@ -294,15 +311,18 @@ void Manager::writeDebugDatabase(string fullname)
     JValue json = pbnjson::Object();
     JValue event = pbnjson::Object();
 
-    JsonDB::getDebugInstance().fetch(fullname, json);
+    if (!JsonDB::getDebugInstance().fetch(fullname, json))
+        Logger::warning(MSGID_CONFIGUREDATA, LOG_PREPIX_FORMAT "Error in debug database fetch", LOG_PREPIX_ARGS);
     if (!json.hasKey(fullname)) {
         json.put(fullname, pbnjson::Array());
     }
 
     event.put("TimeStamp", Platform::timeStr());
     json[fullname].append(event);
-    JsonDB::getDebugInstance().insert(fullname, json[fullname]);
-    JsonDB::getDebugInstance().flush();
+    if (!JsonDB::getDebugInstance().insert(fullname, json[fullname]))
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in debug database insert", LOG_PREPIX_ARGS);
+    if (!JsonDB::getDebugInstance().flush())
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in debug database flush", LOG_PREPIX_ARGS);
 }
 
 void Manager::printDebug()
@@ -327,14 +347,19 @@ void Manager::updateFactoryDatabase(JValue configs, bool isVolatile)
 
     for (JValue::KeyValue config : configs.children()) {
         string fullName = config.first.asString();
-        if (config.second.isNull())
-            jsonDB->remove(fullName);
-        else
-            jsonDB->insert(fullName, config.second);
+        if (config.second.isNull()) {
+            if (!jsonDB->remove(fullName))
+                Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in database remove", LOG_PREPIX_ARGS);
+        } else {
+            if (!jsonDB->insert(fullName, config.second))
+                Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in database insert", LOG_PREPIX_ARGS);
+        }
 
         Json::addUniqueStrIntoArray(database[JsonDB::FULLNAME_USER], fullName);
     }
-    jsonDB->insert(JsonDB::FULLNAME_USER, database[JsonDB::FULLNAME_USER]);
-    jsonDB->flush();
+    if (!jsonDB->insert(JsonDB::FULLNAME_USER, database[JsonDB::FULLNAME_USER]))
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in database insert", LOG_PREPIX_ARGS);
+    if (!jsonDB->flush())
+        Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in database flush", LOG_PREPIX_ARGS);
 }
 

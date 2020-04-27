@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public:
 
     // fetch
     void fetchConfigs(JValue &database);
-    bool fetchConfigs(JsonDB &jsonDB, JsonDB *permissionDB = NULL);
+    void fetchConfigs(JsonDB &jsonDB, JsonDB *permissionDB = NULL);
     void fetchLayers(JsonDB &jsonDB);
 
     // layer
@@ -59,7 +59,7 @@ public:
     Layer* getLayer(string name);
     bool insertLayer(Layer &layerInfo);
     bool isLayersSorted();
-    string getLayersVersion() { return m_version; }
+    const string& getLayersVersion() const { return m_version; }
 
     // about conf file
     void clear();

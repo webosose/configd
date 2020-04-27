@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,7 +50,11 @@ bool Platform::canWriteFile(const string &path)
         return false;
     }
 
-    fclose(fp);
+    if (0 != fclose(fp)) {
+        Logger::warning(MSGID_CONFIGDSERVICE,
+                        LOG_PREPIX_FORMAT "file (%s) close error",
+                        LOG_PREPIX_ARGS, path.c_str());
+    }
     return true;
 }
 
@@ -150,35 +154,34 @@ string Platform::concatPaths(string parent, string child)
     return parent;
 }
 
-string& Platform::extractFileName(string &fileName, string &name, string &extension)
+void Platform::extractFileName(string &fileName, string &name, string &extension)
 {
     name = fileName;
     extension.clear();
 
     int lastIndex = fileName.find_last_of('.');
     if (lastIndex < 0)
-        return fileName;
+        return;
 
     name = fileName.substr(0, lastIndex);
     extension = fileName.substr(lastIndex + 1);
-    return fileName;
 }
 
-string& Platform::trim(string& str)
+void Platform::trim(string& str)
 {
     size_t first = str.find_first_not_of(' ');
     if (string::npos == first)
     {
-        return str;
+        return;
     }
     size_t last = str.find_last_not_of(' ');
     str = str.substr(first, (last - first + 1));
-    return str;
 }
 
 string Platform::timeStr()
 {
     char buffer[64];
-    sprintf(buffer, "%u", (unsigned)time(NULL));
+    if (sprintf(buffer, "%u", (unsigned)time(NULL)) < 0)
+        return "";
     return buffer;
 }
