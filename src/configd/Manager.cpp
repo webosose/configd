@@ -200,6 +200,10 @@ bool Manager::load()
     Configuration::getInstance().setListener(this);
     if(isLoadExistDB) {
         Configuration::getInstance().selectAll();
+    } else {
+        // Do reconfigure at lease once, if this is the first time creating main db.
+        if (!reconfigure(true, true))
+            Logger::warning(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Error in reconfigure", LOG_PREPIX_ARGS);
     }
 
     m_isLoaded = true;
