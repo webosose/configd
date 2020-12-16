@@ -1,18 +1,14 @@
 {
-    "configd" : [
+  "systemconfig.query" : [
       "com.webos.service.config/getConfigs"
-    ],
-    "configd.internal" : [
-      "com.webos.service.config/getConfigs",
+  ],
+  "systemconfig.management" : [
       "com.webos.service.config/setConfigs",
       "com.webos.service.config/reconfigure"
-    ],
-    "configd.private" : [
+  ],
+  "systemconfig.devutility" : [
       "com.webos.service.config/dump",
       "com.webos.service.config/fullDump",
       "com.webos.service.config/reloadConfigs"
-    ],
-    "settings" : [
-      "com.webos.service.config/getConfigs"
-    ]
+  ]
 }
