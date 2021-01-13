@@ -1,7 +1,15 @@
 {
     "com.webos.service.config": [
-        "settings",
-        "system",
+        "devmode.query",
+        "preferences.application",
+        "preferences.system",
+        "systemsettings.management",
+        "systemsettings.query",
+        "time.management",
+        "time.query",
+        "power.operation",
+        "power.management",
+        "filecache.management",
         "tv.settings"
     ]
 }
