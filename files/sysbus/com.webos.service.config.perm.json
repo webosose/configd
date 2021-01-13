@@ -1,6 +1,8 @@
 {
     "com.webos.service.config": [
-        "devmode.query",
+        "settings",
+        "system",
+	"devmode.query",
         "preferences.application",
         "preferences.system",
         "systemsettings.management",
