@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 LG Electronics, Inc.
+// Copyright (c) 2014-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -334,15 +334,13 @@ bool Configuration::runPostProcess(JsonDB &jsonDB)
     postDB.load(outputFilename);
     jsonDB.copy(postDB);
 
-    // TODO: Do we need to sync here?
-
 Done:
     if (inputFilename != NULL) {
-        g_unlink(inputFilename);
+        (void)g_unlink(inputFilename);
         free(inputFilename);
     }
     if (outputFilename != NULL) {
-        g_unlink(outputFilename);
+        (void)g_unlink(outputFilename);
         free(outputFilename);
     }
     return result;
