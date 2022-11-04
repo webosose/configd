@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 LG Electronics, Inc.
+// Copyright (c) 2014-2022 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -298,35 +298,42 @@ bool JsonDB::searchKey(const string &regEx, JValue &result)
     if (regEx.empty())
         return false;
 
+bool returnValue = false;
+try
+{
     boost::regex name(regEx);
     string categoryName;
     string configName;
-    bool returnValue = false;
 
-    for (JValue::KeyValue category : m_database.children()) {
+    for (JValue::KeyValue category : m_database.children())
+    {
         string categoryName = category.first.asString();
-        for (JValue::KeyValue config : category.second.children()) {
+        for (JValue::KeyValue config : category.second.children())
+        {
             configName = config.first.asString();
             string fullConfig = categoryName + "." + configName;
-            try {
-                if (boost::regex_search(fullConfig, name)) {
-                    result.put(fullConfig, m_database[categoryName][configName].duplicate());
-                    returnValue = true;
-                }
-            }
-            catch (boost::regex_error& e) {
-                Logger::debug(LOG_PREPIX_FORMAT "regex_search failed: %s",
-                              LOG_PREPIX_ARGS,
-                              e.what());
-            }
-            catch (exception& e) {
-                Logger::debug(LOG_PREPIX_FORMAT "regex_search failed: %s",
-                              LOG_PREPIX_ARGS,
-                              e.what());
+            if (boost::regex_search(fullConfig, name))
+            {
+                result.put(fullConfig, m_database[categoryName][configName].duplicate());
+                returnValue = true;
             }
         }
     }
-    return returnValue;
+}
+catch (boost::regex_error &e)
+{
+    Logger::debug(LOG_PREPIX_FORMAT "regex_search failed: %s",
+                  LOG_PREPIX_ARGS,
+                  e.what());
+}
+catch (exception &e)
+{
+    Logger::debug(LOG_PREPIX_FORMAT "regex_search failed: %s",
+                  LOG_PREPIX_ARGS,
+                  e.what());
+}
+
+return returnValue;
 }
 
 void JsonDB::clear()
