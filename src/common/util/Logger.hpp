@@ -287,6 +287,9 @@ private:
 
     bool findFromFile(const char* level, const char* targetStr)
     {
+        if (!level || !targetStr)      // CID 9043610, 9043635 - handle null pointer dereferencing
+            return false;
+
         ifstream fin(m_logFilePath);
         if (!fin) {
             return false;
@@ -310,6 +313,9 @@ private:
 
     bool findFromMemory(const char* level, const char* targetStr)
     {
+        if (!level || !targetStr)      // CID 9043639, 9043667 - handle null pointer dereferencing
+            return false;
+
         if (!m_strStream.seekg(ios_base::beg)) {
             return false;
         }

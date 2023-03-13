@@ -358,6 +358,13 @@ bool JsonDB::flush()
     string configData = m_database.stringify("    ");
 
     gchar *dirname = g_path_get_dirname(m_filename.c_str());
+    if (!dirname) {
+        // CID 9172674, 9172677 - // handle null pointer dereference
+        Logger::debug(LOG_PREPIX_FORMAT "Failed to get directory path", LOG_PREPIX_ARGS);
+        g_free(dirname);
+        return false;
+    }
+
     if (g_mkdir_with_parents(dirname, 0755)) {
         Logger::error(MSGID_CONFIGUREDATA,
                       LOG_PREPIX_FORMAT "Failed to mkdir %s: %s",
@@ -375,15 +382,26 @@ bool JsonDB::flush()
     GError *gerror = NULL;
     mode_t mask = umask(S_IRWXG | S_IRWXO);
     if (!g_file_set_contents(m_filename.c_str(), configData.c_str(), configData.length(), &gerror)) {
-        Logger::error(MSGID_CONFIGUREDATA,
-                      LOG_PREPIX_FORMAT "Failed to write content into %s: %s",
-                      LOG_PREPIX_ARGS, m_filename.c_str(), gerror->message);
+        if (gerror != NULL) {
+            // CID 9333492 - Handle usage of allocated memory without a null check.
+            Logger::error(MSGID_CONFIGUREDATA,
+                         LOG_PREPIX_FORMAT "Failed to write content into %s: %s",
+                         LOG_PREPIX_ARGS, m_filename.c_str(), gerror->message);
+            g_error_free(gerror);
+        }
+        else {
+            Logger::error(MSGID_CONFIGUREDATA,
+                         LOG_PREPIX_FORMAT "Failed to write content into %s",
+                         LOG_PREPIX_ARGS, m_filename.c_str());
+        }
+
         umask(mask);
-        g_error_free(gerror);
         return false;
     }
     umask(mask);
-    g_error_free(gerror);
+    if (gerror != NULL) {
+        g_error_free(gerror);
+    }
     m_isUpdated = false;
     return true;
 }

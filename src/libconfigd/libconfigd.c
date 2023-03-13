@@ -997,6 +997,15 @@ bool config_loadConfigsFromFile(char *path, char *fileName, int32_t *errorCode)
     }
 
     char *fullPath = g_strconcat(path, "/", fileName, NULL);
+    if (!fullPath) {
+        // CID 9026655, 9158810 - handle null pointer dereference
+        LOG_LIB_ERROR_PAIRS(MSGID_LIBCONFIGD, 0, "%s: failed to concatenate strings", __FUNCTION__);
+
+        if (NULL != errorCode)
+            *errorCode = CONFIG_INVALID_ARGUMENTS;
+
+        return false;
+    }
 
     if (!g_file_test(fullPath, G_FILE_TEST_EXISTS))
     {
@@ -1027,6 +1036,17 @@ bool config_loadConfigsFromFile(char *path, char *fileName, int32_t *errorCode)
 
     categoryLength = strlen(fileName);
     category = (char *)malloc((categoryLength + 1) * sizeof(char));
+    if (!category) {
+        // CID 9026696, 9158814 - handle null pointer dereference
+        LOG_LIB_ERROR_PAIRS(MSGID_LIBCONFIGD, 0, "%s: failed to allocate memory for category", __FUNCTION__);
+        
+        if (NULL != errorCode)
+            *errorCode = CONFIG_FILE_PARSE_ERROR;
+
+        g_free(fullPath);
+        return false;
+    }
+
     strcpy(category, fileName);
 
     g_free(fullPath);
