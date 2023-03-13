@@ -33,8 +33,18 @@ bool LS2MessageContainer::pushMessage(shared_ptr<IMessage> message)
 {
     shared_ptr<HandleAdapter> handleAdapter =
             std::dynamic_pointer_cast<HandleAdapter>(AbstractBusFactory::getInstance()->getIHandle());
+    if (!handleAdapter) {
+        // handle null pointer exception
+        return false;
+    }
+
     shared_ptr<MessageAdapter> messageAdapter =
             std::dynamic_pointer_cast<MessageAdapter>(message);
+    if (!messageAdapter) {
+        // CID 9026672, 9158813 - handle null pointer exception
+        return false;
+    }
+
     LSError lserror;
 
     LSErrorInit(&lserror);
@@ -55,6 +65,11 @@ bool LS2MessageContainer::each(IMessagesListener &listener, JsonDB &newDB, JsonD
 {
     shared_ptr<HandleAdapter> handleAdapter =
                 std::dynamic_pointer_cast<HandleAdapter>(AbstractBusFactory::getInstance()->getIHandle());
+    if (!handleAdapter) {
+        // CID 9026664, 9158815 - handle null pointer exception
+        return false;
+    }
+
     LSSubscriptionIter* iter = nullptr;
     LSError lserror;
 

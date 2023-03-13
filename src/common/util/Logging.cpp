@@ -141,6 +141,13 @@ static void lazyDbgPrintPost(char *msg)
 
     if (!lazyMsg) {
         lazyMsg = g_new0(lazyMsg_t, 1);
+        if (lazyMsg == NULL) {
+            // CID 9026701, 9158811 - Handle nullptr deferencing
+            g_critical("Failed to allocate memory for lazy message");
+            g_mutex_unlock(&lazyMsgsLock);
+            return;
+        }
+
         lazyMsg->tsFirst = tsNow;
         lazyMsg->tsLast = tsNow;
         lazyMsg->count = 1;
