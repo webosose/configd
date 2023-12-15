@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2021 LG Electronics, Inc.
+// Copyright (c) 2014-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include "Process.h"
 #include "util/Platform.h"
 #include "util/Logger.hpp"
+#include "util/BuildInfo.hpp"
 
 const string Configuration::PATH_LAYERS_DIR = INSTALL_SYSCONFDIR "/configd";
 const string Configuration::PATH_DEBUG_LAYERS_DIR = INSTALL_SYSMGR_LOCALSTATEDIR "/preferences";
@@ -34,8 +35,11 @@ const string Configuration::POST_PROCESS_IP_PREFIX = "cfgdo";
 
 Configuration::Configuration()
 {
-    string machineConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers_" TARGET_MACHINE ".json");
-    string distroConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers_" TARGET_DISTRO".json");
+    BuildInfo buildInfo;
+    std::string TARGET_MACHINE = buildInfo.get("MACHINE");
+    std::string TARGET_DISTRO = buildInfo.get("DISTRO");
+    string machineConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers_" + TARGET_MACHINE + ".json");
+    string distroConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers_" + TARGET_DISTRO + ".json");
     string defaultConf = Platform::concatPaths(PATH_LAYERS_DIR, "layers.json");
     string debugConf = Platform::concatPaths(PATH_DEBUG_LAYERS_DIR, "layers_debug.json");
 
