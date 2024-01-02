@@ -207,8 +207,6 @@ static void config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *us
 
     }
 
-    g_mutex_unlock(&configCacheLock);
-
     if (result)
     {
         LOG_LIB_INFO_PAIRS(MSGID_LIBCONFIGD, 0, "setConfigs is requested successfully");
@@ -226,6 +224,7 @@ static void config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *us
     }
 
     j_release(&replyObj);
+    g_mutex_unlock(&configCacheLock);
 }
 
 static void config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
