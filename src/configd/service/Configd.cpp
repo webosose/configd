@@ -34,13 +34,10 @@ const string Configd::NAME_CONFIGD_SIGNALS = "/com/webos/config";
 const string Configd::NAME_CONFIGD_RELOAD_DONE = "reloadDone";
 const string Configd::NAME_GET_PERMISSION = "read";
 
-const LSMethod Configd::METHOD_TABLE[7] = {
+const LSMethod Configd::METHOD_TABLE[4] = {
     { "getConfigs", Configd::_getConfigs, LUNA_METHOD_FLAGS_NONE },
     { "reconfigure", Configd::_reconfigure, LUNA_METHOD_FLAGS_NONE },
     { "setConfigs", Configd::_setConfigs, LUNA_METHOD_FLAGS_NONE },
-    { "reloadConfigs", Configd::_reloadConfigs, LUNA_METHOD_FLAGS_NONE },
-    { "dump", Configd::_dump, LUNA_METHOD_FLAGS_NONE },
-    { "fullDump", Configd::_fullDump, LUNA_METHOD_FLAGS_NONE },
     { nullptr, nullptr }
 };
 
@@ -372,92 +369,6 @@ Exit:
     return true;
 }
 
-bool Configd::dump(LSMessage &message)
-{
-    Logger::warning(MSGID_DEPRECATED_API,
-                    LOG_PREPIX_FORMAT "dump API is deprecated. Do not use.",
-                    LOG_PREPIX_ARGS);
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Start Handle-dump", LOG_PREPIX_ARGS);
-    std::shared_ptr<IMessage> request = AbstractBusFactory::getInstance()->getIMessage(&message);
-    JValue requestPayload;
-    JValue responsePayload = pbnjson::Object();
-    int errorCode = ErrorDB::ERRORCODE_UNKNOWN;
-    bool returnValue = true;
-
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Request (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), requestPayload.stringify("    ").c_str());
-
-    JValue configs = pbnjson::Object();
-    errorCode = m_configdListener->onDump(configs);
-    if (errorCode < 0) {
-        returnValue = false;
-        goto Exit;
-    }
-
-Exit:
-    responsePayload.put("returnValue", returnValue);
-    if (returnValue) {
-        responsePayload.put("configs", configs);
-    } else {
-        Logger::error(MSGID_CONFIGDSERVICE,
-                      LOG_PREPIX_FORMAT "Error: %s",
-                      LOG_PREPIX_ARGS, ErrorDB::getErrorText(errorCode));
-        responsePayload.put("errorCode", errorCode);
-        responsePayload.put("errorText", ErrorDB::getErrorText(errorCode));
-    }
-
-    request->respond(responsePayload);
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "End Handle-dump", LOG_PREPIX_ARGS);
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Response (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), responsePayload.stringify("    ").c_str());
-    return true;
-}
-
-bool Configd::fullDump(LSMessage &message)
-{
-    Logger::warning(MSGID_DEPRECATED_API,
-                    LOG_PREPIX_FORMAT "fullDump API is deprecated. Do not use.",
-                    LOG_PREPIX_ARGS);
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Start Handle-fullDump", LOG_PREPIX_ARGS);
-    std::shared_ptr<IMessage> request = AbstractBusFactory::getInstance()->getIMessage(&message);
-    JValue requestPayload;
-    JValue responsePayload = pbnjson::Object();
-    int errorCode = ErrorDB::ERRORCODE_UNKNOWN;
-    bool returnValue = true;
-
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Request (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), requestPayload.stringify("    ").c_str());
-
-    JValue configs = pbnjson::Array();
-    errorCode = m_configdListener->onFullDump(configs);
-    if (errorCode < 0) {
-        returnValue = false;
-        goto Exit;
-    }
-
-Exit:
-    responsePayload.put("returnValue", returnValue);
-    if (returnValue) {
-        responsePayload.put("configs", configs);
-    } else {
-        Logger::error(MSGID_CONFIGDSERVICE,
-                      LOG_PREPIX_FORMAT "Error: %s",
-                      LOG_PREPIX_ARGS, ErrorDB::getErrorText(errorCode));
-        responsePayload.put("errorCode", errorCode);
-        responsePayload.put("errorText", ErrorDB::getErrorText(errorCode));
-    }
-
-    request->respond(responsePayload);
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "End Handle-fullDump", LOG_PREPIX_ARGS);
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Response (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), responsePayload.stringify("    ").c_str());
-    return true;
-}
-
 bool Configd::reconfigure(LSMessage &message)
 {
     Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Start Handle-reconfigure", LOG_PREPIX_ARGS);
@@ -505,43 +416,6 @@ Exit:
 
     request->respond(responsePayload);
     Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "End Handle-reconfigure", LOG_PREPIX_ARGS);
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Response (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), responsePayload.stringify("    ").c_str());
-    return true;
-}
-
-bool Configd::reloadConfigs(LSMessage &message)
-{
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "Start Handle-reloadConfigs", LOG_PREPIX_ARGS);
-    std::shared_ptr<IMessage> request = AbstractBusFactory::getInstance()->getIMessage(&message);
-    JValue requestPayload;
-    JValue responsePayload = pbnjson::Object();
-    int errorCode = ErrorDB::ERRORCODE_UNKNOWN;
-    bool returnValue = true;
-
-    Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Request (%s)",
-                    LOG_PREPIX_ARGS,
-                    request->clientName().c_str(), requestPayload.stringify("    ").c_str());
-
-    errorCode = m_configdListener->onReloadConfigs();
-    if (errorCode < 0) {
-        returnValue = false;
-        goto Exit;
-    }
-
-Exit:
-    responsePayload.put("returnValue", returnValue);
-    if (!returnValue) {
-        Logger::error(MSGID_CONFIGDSERVICE,
-                      LOG_PREPIX_FORMAT "Error: %s",
-                      LOG_PREPIX_ARGS, ErrorDB::getErrorText(errorCode));
-        responsePayload.put("errorCode", errorCode);
-        responsePayload.put("errorText", ErrorDB::getErrorText(errorCode));
-    }
-
-    request->respond(responsePayload);
-    Logger::info(MSGID_CONFIGDSERVICE, LOG_PREPIX_FORMAT "End Handle-reloadConfigs", LOG_PREPIX_ARGS);
     Logger::verbose(LOG_PREPIX_FORMAT "Client (%s) Response (%s)",
                     LOG_PREPIX_ARGS,
                     request->clientName().c_str(), responsePayload.stringify("    ").c_str());

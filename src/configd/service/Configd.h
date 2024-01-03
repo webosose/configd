@@ -67,9 +67,6 @@ public:
     virtual bool getConfigs(LSMessage &message);
     virtual bool reconfigure(LSMessage &message);
     virtual bool setConfigs(LSMessage &message);
-    virtual bool reloadConfigs(LSMessage &message);
-    virtual bool dump(LSMessage &message);
-    virtual bool fullDump(LSMessage& message);
     virtual bool hasPermission(JValue permissions, string serviceName, string permissionName);
 
     JValue splitVolatileConfigs(JValue keys);
@@ -92,26 +89,8 @@ public:
         return configd->setConfigs(*msg);
     }
 
-    static bool _reloadConfigs(LSHandle *sh, LSMessage *msg, void *context)
-    {
-        Configd *configd = (Configd*)context;
-        return configd->reloadConfigs(*msg);
-    }
-
-    static bool _dump(LSHandle *sh, LSMessage *msg, void *context)
-    {
-        Configd *configd = (Configd*)context;
-        return configd->dump(*msg);
-    }
-
-    static bool _fullDump(LSHandle *sh, LSMessage *msg, void *context)
-    {
-        Configd *configd = (Configd*)context;
-        return configd->fullDump(*msg);
-    }
-
 protected:
-    static const LSMethod METHOD_TABLE[7];
+    static const LSMethod METHOD_TABLE[4];
     static const LSSignal SIGNAL_TABLE[2];
 
     Configd();

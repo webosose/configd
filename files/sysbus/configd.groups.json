@@ -1,6 +1,5 @@
 {
     "allowedNames": ["com.webos.service.config"],
     "systemconfig.query" : ["oem"],
-    "systemconfig.management" : ["oem"],
-    "systemconfig.devutility" : ["oem"]
+    "systemconfig.management" : ["oem"]
 }
