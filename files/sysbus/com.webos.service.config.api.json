@@ -5,10 +5,5 @@
   "systemconfig.management" : [
       "com.webos.service.config/setConfigs",
       "com.webos.service.config/reconfigure"
-  ],
-  "systemconfig.devutility" : [
-      "com.webos.service.config/dump",
-      "com.webos.service.config/fullDump",
-      "com.webos.service.config/reloadConfigs"
   ]
 }
