@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@
 #define INSTALL_SYSCONFDIR        "/etc"
 
 #define INSTALL_RUNTIMEINFODIR    "/var/run"
-
-#define TARGET_MACHINE            "desktop"
-
-#define TARGET_DISTRO             "test"
 
 #define GETCONFIGS_SCHEMA         "files/schema/ConfigdService.getConfigs.schema"
 

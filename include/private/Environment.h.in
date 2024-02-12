@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@
 #define INSTALL_WEBOS_SYSCONFDIR  "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@"
 
 #define INSTALL_RUNTIMEINFODIR    "@WEBOS_INSTALL_RUNTIMEINFODIR@"
-
-#define TARGET_DISTRO             "@WEBOS_TARGET_DISTRO@"
-
-#define TARGET_MACHINE            "@WEBOS_TARGET_MACHINE@"
 
 #define CONFIGFEATUESLIST_SCHEMA  "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/schemas/configd/ConfigdService.featureList.schema"
 
