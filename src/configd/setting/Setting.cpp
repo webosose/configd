@@ -59,7 +59,7 @@ void Setting::initialize()
     string url = "luna://com.webos.bootManager/getBootStatus";
     pbnjson::JValue params = pbnjson::Object();
     params.put("subscribe", true);
-    m_call = AbstractBusFactory::getInstance()->getIHandle()->call(url,
+    m_call = AbstractBusFactory::getInstance()->getIHandle()->call(std::move(url),
                                                                    params.stringify(),
                                                                    this);
 }

@@ -31,7 +31,7 @@ public:
                     if (equals == "=") {
                         key = trim(key);
                         value = trim(value);
-                        keyValueMap_[key] = value;
+                        keyValueMap_[key] = std::move(value);
                     }
                 }
             }
