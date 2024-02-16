@@ -329,7 +329,7 @@ bool Configuration::runPostProcess(JsonDB &jsonDB)
     }
 
     for (JValue postProcess : m_postProcessing.items()) {
-        Process process(postProcess);
+        Process process(std::move(postProcess));
         process.setArgs(inputFilename, outputFilename);
         process.execute();
     }

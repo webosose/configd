@@ -181,7 +181,8 @@ void Platform::trim(string& str)
 string Platform::timeStr()
 {
     char buffer[64];
-    if (sprintf(buffer, "%u", (unsigned)time(NULL)) < 0)
+    int64_t time_value = static_cast<int64_t>(time(NULL));
+    if (snprintf(buffer, sizeof(buffer), "%lld", time_value) < 0)
         return "";
     return buffer;
 }
