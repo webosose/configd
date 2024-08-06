@@ -146,7 +146,10 @@ int main(int argc, char *argv[])
     g_option_context_set_summary(context, OPTION_SUMMARY);
     g_option_context_set_description(context, OPTION_DESCRIPTION);
     if (!g_option_context_parse(context, &argc, &argv, &gerror)) {
-        fprintf(stderr, "Option parsing error : %s\n", gerror->message);
+        // Check the return value of fprintf
+        if (fprintf(stderr, "Option parsing error: %s\n", gerror->message) < 0) {
+            perror("fprintf error");
+        }
         processResult = EXIT_STATUS_Invalid_arguments;
         goto Exit;
     }

@@ -44,7 +44,11 @@ void init_signal_handlers()
     sa.sa_sigaction = segfault_sig_action;
     sa.sa_flags = SA_SIGINFO;
 
-    sigaction(SIGSEGV, &sa, NULL);
+    // Check the return value of sigaction
+    if (sigaction(SIGSEGV, &sa, NULL) == -1) {
+       perror("sigaction");
+       Logger::error(MSGID_MAIN, LOG_PREPIX_FORMAT "sigaction error", LOG_PREPIX_ARGS);
+    }
 }
 
 bool lock_process()
