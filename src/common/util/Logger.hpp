@@ -235,7 +235,7 @@ private:
             cerr << "Error in clock_gettime" << endl;
         }
 
-        printf("[%5ld.%09ld] [%-7s] %-15s ", time.tv_sec, time.tv_nsec, logLevel, msgid);
+        printf("[%5jd.%09jd] [%-7s] %-15s ", (intmax_t) time.tv_sec, (intmax_t) time.tv_nsec, logLevel, msgid);
         printf(format, args...);
         printf("\n");
         return true;
@@ -275,7 +275,7 @@ private:
         if (sizeof...(args) == 0) {
             m_fileStream << "[" << logLevel << "] " << msgid << " "<< format << endl;
         } else {
-            cnt = snprintf(m_buf, 1024, "[%5ld.%09ld] [%-7s] %-15s ", time.tv_sec, time.tv_nsec, logLevel, msgid);
+            cnt = snprintf(m_buf, 1024, "[%5jd.%09jd] [%-7s] %-15s ", (intmax_t) time.tv_sec, (intmax_t) time.tv_nsec, logLevel, msgid);
             cnt += snprintf(m_buf + strlen(m_buf), 1024 - strlen(m_buf), format, args...);
             if (cnt < 0 || cnt > 1024) {
                 return false;
