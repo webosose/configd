@@ -27,11 +27,11 @@ static bool config_setLSHandle(LSHandle *lsHandle);
 static LSHandle *config_getLSHandle();
 
 static bool config_cbWatchConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
-static void config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
-static void config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
+static bool config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
+static bool config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
 static bool configd_getConfigsUnsafe(LSHandle *lsHandle, jvalue_ref queryObject, int32_t *errorCode);
-static void config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
-static void config_cbResultConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
+static bool config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
+static bool config_cbResultConfigs(LSHandle *lsHandle, LSMessage *message, void *userData);
 static void config_evaluateMissingConfigsSafe();
 
 /**
@@ -185,7 +185,7 @@ static bool config_cbWatchConfigs(LSHandle *lsHandle, LSMessage *message, void *
     return true;
 }
 
-static void config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
+static bool config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
 {
     JSchemaInfo schemaInfo;
     jvalue_ref replyObj = NULL;
@@ -225,9 +225,11 @@ static void config_cbSetConfigs(LSHandle *lsHandle, LSMessage *message, void *us
 
     j_release(&replyObj);
     g_mutex_unlock(&configCacheLock);
+
+    return result;
 }
 
-static void config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
+static bool config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
 {
     JSchemaInfo schemaInfo;
     jvalue_ref replyObj = NULL;
@@ -256,6 +258,8 @@ static void config_cbReconfigs(LSHandle *lsHandle, LSMessage *message, void *use
     }
 
     j_release(&replyObj);
+
+    return result;
 }
 
 //Prefetch the requested configs
@@ -355,7 +359,7 @@ static bool configd_getConfigsUnsafe(LSHandle *lsHandle, jvalue_ref queryObject,
     return false;
 }
 
-static void config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
+static bool config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
 {
     JSchemaInfo schemaInfo;
     jvalue_ref replyObj = NULL;
@@ -373,7 +377,7 @@ static void config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void 
     }
     j_release(&replyObj);
 
-    if (!result) return;
+    if (!result) return result;
 
     g_mutex_lock(&configCacheLock);
 
@@ -384,9 +388,10 @@ static void config_cbReLoadConfigs(LSHandle *lsHandle, LSMessage *message, void 
     g_cond_broadcast(&configCacheCond);
     g_mutex_unlock(&configCacheLock);
 
+    return result;
 }
 
-static void config_cbResultConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
+static bool config_cbResultConfigs(LSHandle *lsHandle, LSMessage *message, void *userData)
 {
     JSchemaInfo schemaInfo;
     jvalue_ref replyObj = NULL;
@@ -402,6 +407,8 @@ static void config_cbResultConfigs(LSHandle *lsHandle, LSMessage *message, void 
     }
 
     j_release(&replyObj);
+
+    return true;
 }
 
 void config_addWatch(configdNotify func, void *watch_context)
